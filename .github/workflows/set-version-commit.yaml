@@ -1,0 +1,33 @@
+name: Set version with commit
+run-name: "Set version to ${{ inputs.version }}"
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        required: true
+        type: string
+
+jobs:
+  set-version:
+    name: Set version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set version file
+        run: echo "${{ inputs.version }}" > VERSION
+        shell: bash
+
+      - name: Create commit
+        uses: planetscale/ghcommit-action@v0.2.20
+        with:
+          commit_message: "chore: set version to ${{ inputs.version }}"
+          repo: ${{ github.repository }}
+          branch: main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

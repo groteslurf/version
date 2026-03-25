@@ -1,0 +1,30 @@
+name: Set version with pull request
+run-name: "Set version to ${{ inputs.version }}"
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        required: true
+        type: string
+
+jobs:
+  set-version:
+    name: Set version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set version file
+        run: echo "${{ inputs.version }}" > VERSION
+        shell: bash
+
+      - name: Create pull-request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          sign-commits: true
+          branch: chore/update-version
